@@ -1,0 +1,155 @@
+/* 役割: デザイントークン（配色・余白・角丸・影・文字）とリセット。全画面で共通。 */
+
+:root {
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --surface-alt: #fafbfc;
+  --border: #e3e6eb;
+  --border-strong: #cdd3dc;
+
+  --text: #1c2128;
+  --text-muted: #62697a;
+  --text-faint: #98a0ad;
+
+  --accent: #4f6df5;
+  --accent-hover: #3d59e0;
+  --accent-soft: #eef1fe;
+
+  --success: #1f9d55;
+  --success-soft: #e6f7ec;
+  --warning: #d97706;
+  --warning-soft: #fef3e0;
+  --danger: #dc2626;
+  --danger-soft: #fdeaea;
+  --waiting: #7c5cff;
+  --waiting-soft: #efeaff;
+
+  /* 重要度の色分け（低=青／中=黄／高=赤）。他の警告表示（--danger/--warning等）とは独立させてあり、
+     3色とも明るさ・鮮やかさを揃えている（-textは同系色の背景に文字を乗せても読めるようにする濃色版） */
+  --importance-high: #ef4444;
+  --importance-high-soft: #fca5a5;
+  --importance-high-text: #b91c1c;
+  --importance-medium: #eab308;
+  --importance-medium-soft: #fde047;
+  --importance-medium-text: #a16207;
+  --importance-low: #3b82f6;
+  --importance-low-soft: #93c5fd;
+  --importance-low-text: #1d4ed8;
+
+  --status-not-started: #98a0ad;
+  --status-not-started-soft: #eef0f2;
+  --status-in-progress: var(--accent);
+  --status-in-progress-soft: var(--accent-soft);
+  --status-waiting: var(--waiting);
+  --status-waiting-soft: var(--waiting-soft);
+  --status-completed: var(--success);
+  --status-completed-soft: var(--success-soft);
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+
+  --shadow-sm: 0 1px 2px rgba(20, 24, 33, 0.06);
+  --shadow-md: 0 4px 16px rgba(20, 24, 33, 0.10);
+  --shadow-lg: 0 12px 32px rgba(20, 24, 33, 0.18);
+
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14161b;
+    --surface: #1c1f26;
+    --surface-alt: #21242c;
+    --border: #2f333d;
+    --border-strong: #3c414c;
+
+    --text: #eef0f3;
+    --text-muted: #a3aab8;
+    --text-faint: #737a88;
+
+    --accent: #7b93ff;
+    --accent-hover: #93a7ff;
+    --accent-soft: #262c48;
+
+    --success: #4ad080;
+    --success-soft: #163227;
+    --warning: #f0a940;
+    --warning-soft: #3a2c14;
+    --danger: #f27272;
+    --danger-soft: #3a1f22;
+    --waiting: #a996ff;
+    --waiting-soft: #2b2540;
+
+    --status-not-started: #838a97;
+    --status-not-started-soft: #2a2d34;
+    --status-completed-soft: #163227;
+    --status-waiting-soft: #2b2540;
+    --status-in-progress-soft: #262c48;
+
+    --importance-high: #f87171;
+    --importance-high-soft: #4c1d1d;
+    --importance-high-text: #f87171;
+    --importance-medium: #e8c66b;
+    --importance-medium-soft: #3a331a;
+    --importance-medium-text: #e8c66b;
+    --importance-low: #7ba8ff;
+    --importance-low-soft: #1c2b4a;
+    --importance-low-text: #7ba8ff;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+button, input, select, textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+h1, h2, h3, h4 {
+  margin: 0;
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  color: var(--accent);
+}

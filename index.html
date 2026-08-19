@@ -1,0 +1,93 @@
+<!--
+  個人用TODO・プロジェクト管理アプリ
+
+  【起動方法】このファイルをブラウザで直接ダブルクリックして開くだけで動きます。
+  ビルドやインストールは一切不要です（Node.js等も不要）。
+  PWA化してあるため、http(s)で配信すればWindowsは「アプリをインストール」、
+  iPhoneはSafariの「ホーム画面に追加」からアプリのように使える（詳細はREADME.md）。
+
+  【重要】下の<script>タグは依存関係の順番に読み込まれています。
+  ファイルを追加するときは、そのファイルが使う機能（依存）より後ろに置いてください。
+  各JSファイルの先頭コメントに「依存」が書いてあるので、迷ったら参照してください。
+  新しいJS/CSSファイルを追加した場合は sw.js の ASSETS 一覧にも追記すること。
+-->
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>個人TODO・プロジェクト管理</title>
+
+  <!-- PWA（アプリインストール）用 -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#4f6df5" />
+  <link rel="icon" href="icons/favicon-32.png" />
+  <!-- iOS Safariの「ホーム画面に追加」用（標準のmanifest対応が弱いため個別に指定） -->
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="TODO" />
+
+  <link rel="stylesheet" href="src/styles/base.css" />
+  <link rel="stylesheet" href="src/styles/layout.css" />
+  <link rel="stylesheet" href="src/styles/components.css" />
+</head>
+<body>
+  <div id="app"></div>
+
+  <!-- 1. 型定義（ドキュメント目的。実行時の副作用なし） -->
+  <script src="src/types/typedefs.js"></script>
+
+  <!-- 2. ロジック層の基礎（他の何にも依存しない） -->
+  <script src="src/logic/id.js"></script>
+  <script src="src/logic/dateUtils.js"></script>
+
+  <!-- 3. ストレージ層 -->
+  <script src="src/storage/keys.js"></script>
+  <script src="src/storage/localStorageAdapter.js"></script>
+  <script src="src/storage/storageAdapter.js"></script>
+
+  <!-- 4. 汎用ストア基盤 -->
+  <script src="src/store/state.js"></script>
+
+  <!-- 5. 履歴（他のストアより先に用意しておく） -->
+  <script src="src/logic/historyLog.js"></script>
+  <script src="src/store/historyStore.js"></script>
+
+  <!-- 6. 繰り返し計算（todosStoreが使う） -->
+  <script src="src/logic/recurrence.js"></script>
+
+  <!-- 7. ドメインストア -->
+  <script src="src/store/projectsStore.js"></script>
+  <script src="src/store/todosStore.js"></script>
+  <script src="src/store/templatesStore.js"></script>
+  <script src="src/store/uiStore.js"></script>
+
+  <!-- 8. ロジック層（純粋関数） -->
+  <script src="src/logic/progress.js"></script>
+  <script src="src/logic/waitingStatus.js"></script>
+  <script src="src/logic/smartLists.js"></script>
+  <script src="src/logic/search.js"></script>
+
+  <!-- 9. 画面描画層 -->
+  <script src="src/render/common.js"></script>
+  <script src="src/render/todoRow.js"></script>
+  <script src="src/render/todoDetail.js"></script>
+  <script src="src/render/quickAdd.js"></script>
+  <script src="src/render/projectCard.js"></script>
+  <script src="src/render/projectForm.js"></script>
+  <script src="src/render/smartListView.js"></script>
+  <script src="src/render/bulkActionBar.js"></script>
+  <script src="src/render/dashboard.js"></script>
+  <script src="src/render/templateManager.js"></script>
+  <script src="src/render/archiveView.js"></script>
+  <script src="src/render/searchOverlay.js"></script>
+  <script src="src/render/appShell.js"></script>
+
+  <!-- 10. 起動処理（必ず最後） -->
+  <script src="src/main.js"></script>
+
+  <!-- 11. PWA登録（アプリ本体の起動には影響しない独立処理） -->
+  <script src="src/pwa.js"></script>
+</body>
+</html>

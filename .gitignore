@@ -1,0 +1,6 @@
+# Claude Codeのローカル設定（この端末固有のため公開リポジトリには含めない）
+.claude/
+
+# OSが自動生成するファイル
+Thumbs.db
+.DS_Store

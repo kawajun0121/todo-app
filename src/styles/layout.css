@@ -1,0 +1,125 @@
+/* 役割: アプリ全体のレイアウト（ヘッダー/サイドバー/メインエリア）とレスポンシブ対応。 */
+
+/*
+  height(min-heightではない)で画面いっぱいに固定することで、
+  下の.app-bodyがflex:1+min-height:0で正しく高さ制限され、
+  .sidebarと.main-contentがそれぞれ独立してスクロールするようになる。
+  （min-heightのままだとページ全体が伸びてスクロールし、サイドバーも一緒に流れてしまう）
+*/
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.app-title {
+  font-weight: 700;
+  font-size: 16px;
+  flex: 1;
+}
+
+.mobile-only {
+  display: none;
+}
+
+.app-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.sidebar {
+  width: 232px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: var(--space-4) var(--space-2);
+  overflow-y: auto;
+}
+
+.sidebar-group {
+  margin-bottom: var(--space-5);
+}
+
+.sidebar-group-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0 var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.sidebar-backdrop {
+  display: none;
+}
+
+.main-content {
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-5);
+  padding-bottom: 100px;
+  overflow-y: auto;
+}
+
+.view {
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.dashboard-section {
+  margin-bottom: var(--space-6);
+}
+
+.dashboard-section h2 {
+  font-size: 15px;
+  margin-bottom: var(--space-3);
+}
+
+@media (max-width: 900px) {
+  .mobile-only {
+    display: inline-flex;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 40;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+    box-shadow: var(--shadow-lg);
+    padding-top: 60px;
+  }
+
+  .sidebar-open {
+    transform: translateX(0);
+  }
+
+  .sidebar-backdrop-show {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 30;
+  }
+
+  .main-content {
+    padding: var(--space-3);
+    padding-bottom: 120px;
+  }
+}
