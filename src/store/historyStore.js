@@ -33,6 +33,12 @@
     return entry;
   }
 
+  // クラウド同期がリモートとマージした結果をまるごと反映する時に使う。
+  function replaceAll(items) {
+    store.setState({ items: items });
+    persist();
+  }
+
   function getForEntity(entityType, entityId) {
     return store.getState().items
       .filter(function (h) {
@@ -47,6 +53,7 @@
     add: add,
     getForEntity: getForEntity,
     getAll: function () { return store.getState().items; },
+    replaceAll: replaceAll,
     subscribe: store.subscribe
   };
 })(window.TodoApp = window.TodoApp || {});

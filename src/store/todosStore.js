@@ -164,6 +164,13 @@
     ids.forEach(function (id) { archive(id); });
   }
 
+  // クラウド同期がリモートとマージした結果をまるごと反映する時に使う。
+  // 通常のcreate/updateと違い履歴には記録しない（マージ処理自体は「変更」ではないため）。
+  function replaceAll(items) {
+    store.setState({ items: items });
+    persist();
+  }
+
   // Inbox／プロジェクト内でのドラッグ並び替え。orderedIdsの並び順どおりにorderを振り直す。
   // 履歴には記録しない（並び替えは変更履歴として残す対象外）。1回のsetStateで反映するので再描画も1回で済む。
   function reorderTodos(orderedIds) {
@@ -218,6 +225,7 @@
     remove: remove,
     bulkUpdate: bulkUpdate,
     bulkArchive: bulkArchive,
+    replaceAll: replaceAll,
     reorderTodos: reorderTodos,
     addSubtask: addSubtask,
     toggleSubtask: toggleSubtask,

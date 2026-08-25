@@ -106,6 +106,12 @@
     return true;
   }
 
+  // クラウド同期がリモートとマージした結果をまるごと反映する時に使う。履歴には記録しない。
+  function replaceAll(items) {
+    store.setState({ items: items });
+    persist();
+  }
+
   // ダッシュボード等でのドラッグ並び替え。orderedIdsの並び順どおりにorderを振り直す。履歴には記録しない。
   function reorderProjects(orderedIds) {
     var now = App.Logic.dateUtils.nowISO();
@@ -130,6 +136,7 @@
     archive: archive,
     restore: restore,
     remove: remove,
+    replaceAll: replaceAll,
     reorderProjects: reorderProjects,
     subscribe: store.subscribe
   };

@@ -53,6 +53,20 @@
   margin-bottom: var(--space-5);
 }
 
+.sidebar-account {
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-4);
+}
+.sidebar-account-email {
+  font-size: 11px;
+  color: var(--text-faint);
+  padding: 0 var(--space-3);
+  margin-bottom: var(--space-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .sidebar-group-label {
   font-size: 11px;
   font-weight: 700;

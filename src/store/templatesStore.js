@@ -26,11 +26,14 @@
 
   function create(partial) {
     partial = partial || {};
+    var now = App.Logic.dateUtils.nowISO();
     var template = {
       id: App.Logic.id.generateId(),
       name: partial.name || '新しいテンプレート',
       category: partial.category || '',
-      todoTemplates: partial.todoTemplates || []
+      todoTemplates: partial.todoTemplates || [],
+      createdAt: now,
+      updatedAt: now
     };
     store.setState(function (s) { return { items: s.items.concat([template]) }; });
     persist();
@@ -40,7 +43,7 @@
   function update(id, patch) {
     var current = getById(id);
     if (!current) return null;
-    var updated = Object.assign({}, current, patch);
+    var updated = Object.assign({}, current, patch, { updatedAt: App.Logic.dateUtils.nowISO() });
     store.setState(function (s) {
       return { items: s.items.map(function (t) { return t.id === id ? updated : t; }) };
     });
@@ -52,6 +55,12 @@
     store.setState(function (s) {
       return { items: s.items.filter(function (t) { return t.id !== id; }) };
     });
+    persist();
+  }
+
+  // クラウド同期がリモートとマージした結果をまるごと反映する時に使う。
+  function replaceAll(items) {
+    store.setState({ items: items });
     persist();
   }
 
@@ -121,6 +130,7 @@
     create: create,
     update: update,
     remove: remove,
+    replaceAll: replaceAll,
     applyToProject: applyToProject,
     seedDefaultsIfEmpty: seedDefaultsIfEmpty,
     subscribe: store.subscribe

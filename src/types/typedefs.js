@@ -76,6 +76,8 @@
  * @property {string} name
  * @property {string} category
  * @property {ProjectTemplateItem[]} todoTemplates
+ * @property {string} createdAt
+ * @property {string} updatedAt - クラウド同期のマージ判定にも使う
  */
 
 /**

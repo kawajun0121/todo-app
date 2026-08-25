@@ -33,7 +33,15 @@
   <link rel="stylesheet" href="src/styles/components.css" />
 </head>
 <body>
-  <div id="app"></div>
+  <!-- ログイン状態の判定中に一瞬だけ表示される簡易ローディング表示。boot()が判定し次第すぐ置き換わる -->
+  <div id="app"><div class="boot-loading">読み込み中…</div></div>
+
+  <!-- 0. Firebase SDK（PC/iPhone間のデータ同期用。CDN読み込みのためビルド不要） -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script src="src/firebaseConfig.js"></script>
+  <script src="src/sync/firebaseInit.js"></script>
 
   <!-- 1. 型定義（ドキュメント目的。実行時の副作用なし） -->
   <script src="src/types/typedefs.js"></script>
@@ -84,10 +92,14 @@
   <script src="src/render/searchOverlay.js"></script>
   <script src="src/render/appShell.js"></script>
 
-  <!-- 10. 起動処理（必ず最後） -->
+  <!-- 10. 同期・認証（ストアと画面描画層に依存するためここに置く） -->
+  <script src="src/sync/authUI.js"></script>
+  <script src="src/sync/cloudSync.js"></script>
+
+  <!-- 11. 起動処理（必ず最後） -->
   <script src="src/main.js"></script>
 
-  <!-- 11. PWA登録（アプリ本体の起動には影響しない独立処理） -->
+  <!-- 12. PWA登録（アプリ本体の起動には影響しない独立処理） -->
   <script src="src/pwa.js"></script>
 </body>
 </html>

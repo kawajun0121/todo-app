@@ -58,8 +58,21 @@
           navItem('templates', '🗂', 'テンプレート管理', '') +
           navItem('archive', '🗄', 'アーカイブ', '') +
         '</div>' +
+        renderAccountSection() +
       '</nav>' +
       '<div class="sidebar-backdrop ' + (state.sidebarOpen ? 'sidebar-backdrop-show' : '') + '" data-action="ui:closeSidebar"></div>'
+    );
+  }
+
+  // 同期が有効な場合だけ、ログイン中のメールアドレスとログアウトボタンを表示する
+  function renderAccountSection() {
+    if (!App.Sync || !App.Sync.available || !App.Sync.auth || !App.Sync.auth.currentUser) return '';
+    var email = App.Sync.auth.currentUser.email || '';
+    return (
+      '<div class="sidebar-group sidebar-account">' +
+        '<div class="sidebar-account-email" title="' + App.Render.common.escapeHtml(email) + '">🔗 ' + App.Render.common.escapeHtml(email) + '</div>' +
+        '<button type="button" class="btn-text" data-action="account:signOut">ログアウト</button>' +
+      '</div>'
     );
   }
 
@@ -460,4 +473,9 @@
   App.Actions['nav:setView'] = function (d) { App.Store.ui.setView(d.view); };
   App.Actions['ui:toggleSidebar'] = function () { App.Store.ui.toggleSidebar(); };
   App.Actions['ui:closeSidebar'] = function () { App.Store.ui.toggleSidebar(); };
+  App.Actions['account:signOut'] = function () {
+    if (window.confirm('ログアウトします。よろしいですか？')) {
+      App.Sync.auth.signOut();
+    }
+  };
 })(window.TodoApp = window.TodoApp || {});

@@ -8,7 +8,7 @@
  CACHE_NAMEのバージョン番号は、キャッシュの中身を入れ替えたいとき（ファイルを追加/削除したとき）
  に上げる。中身を変えずにバージョンだけ上げても更新はされない点に注意。
 */
-var CACHE_NAME = 'todo-app-cache-v1';
+var CACHE_NAME = 'todo-app-cache-v2';
 
 var ASSETS = [
   './',
@@ -17,6 +17,11 @@ var ASSETS = [
   './src/styles/base.css',
   './src/styles/layout.css',
   './src/styles/components.css',
+  'https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js',
+  'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js',
+  'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js',
+  './src/firebaseConfig.js',
+  './src/sync/firebaseInit.js',
   './src/types/typedefs.js',
   './src/logic/id.js',
   './src/logic/dateUtils.js',
@@ -48,7 +53,10 @@ var ASSETS = [
   './src/render/archiveView.js',
   './src/render/searchOverlay.js',
   './src/render/appShell.js',
+  './src/sync/authUI.js',
+  './src/sync/cloudSync.js',
   './src/main.js',
+  './src/pwa.js',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/apple-touch-icon.png',
