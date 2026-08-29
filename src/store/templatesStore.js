@@ -1,7 +1,10 @@
 /*
  役割: プロジェクトテンプレートのCRUDと、テンプレートからのTODO一括生成。
  依存: store/state.js, storage/storageAdapter.js, storage/keys.js,
-      logic/id.js, store/todosStore.js
+      logic/id.js, logic/dateUtils.js, store/todosStore.js
+
+ 削除はremove()参照。deleted:trueの目印を付けるだけで配列からは取り除かない
+ （クラウド同期で他端末に削除を伝えるため。詳しくはcloudSync.jsのコメント参照）。
 */
 (function (App) {
   'use strict';
@@ -16,8 +19,13 @@
     adapter.save(KEYS.TEMPLATES, store.getState().items);
   }
 
-  function getAll() {
-    return store.getState().items;
+  function getAll(opts) {
+    opts = opts || {};
+    var items = store.getState().items;
+    if (!opts.includeDeleted) {
+      items = items.filter(function (t) { return !t.deleted; });
+    }
+    return items;
   }
 
   function getById(id) {
@@ -51,11 +59,10 @@
     return updated;
   }
 
+  // 配列から取り除くのではなく deleted:true の目印を付けるだけにしている（他端末との同期マージ時に
+  // 削除が復活してしまうのを防ぐため。todosStore.remove()と同じ理由）。
   function remove(id) {
-    store.setState(function (s) {
-      return { items: s.items.filter(function (t) { return t.id !== id; }) };
-    });
-    persist();
+    update(id, { deleted: true, deletedAt: App.Logic.dateUtils.nowISO() });
   }
 
   // クラウド同期がリモートとマージした結果をまるごと反映する時に使う。
@@ -78,7 +85,9 @@
   }
 
   function seedDefaultsIfEmpty() {
-    if (getAll().length > 0) return;
+    // 削除済み(トゥームストーン)も含めて「一度でも存在したか」を見る。そうしないと、
+    // 3つとも削除した後に再起動するたびに毎回また作り直されてしまう。
+    if (getAll({ includeDeleted: true }).length > 0) return;
     create({
       name: '不動産売却仲介',
       category: '不動産仲介',

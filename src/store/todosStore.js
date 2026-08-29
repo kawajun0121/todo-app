@@ -22,6 +22,9 @@
     if (!opts.includeArchived) {
       items = items.filter(function (t) { return !t.archived; });
     }
+    if (!opts.includeDeleted) {
+      items = items.filter(function (t) { return !t.deleted; });
+    }
     return items;
   }
 
@@ -148,13 +151,15 @@
 
   // 完全に削除する。アーカイブ経由（archiveView）でも、行のゴミ箱アイコンからの
   // 1クリック削除（todoRow）でも、どちらからでも呼べるようアーカイブ状態は問わない。
+  //
+  // 【重要】配列から取り除くのではなく deleted:true の目印（トゥームストーン）を付けるだけにしている。
+  // 完全に取り除いてしまうと、他端末と同期した時に「削除された」のか「まだ向こうで作られていない」のか
+  // 区別できず、マージ処理が復活させてしまう（実際に他端末で削除したはずのTODOが復活する不具合が起きた）。
+  // deleted:trueのTODOはgetAll()で自動的に除外されるので、画面上は削除と同じに見える。
   function remove(id) {
     var current = getById(id);
     if (!current) return false;
-    store.setState(function (s) {
-      return { items: s.items.filter(function (t) { return t.id !== id; }) };
-    });
-    persist();
+    update(id, { deleted: true, deletedAt: App.Logic.dateUtils.nowISO() });
     return true;
   }
 

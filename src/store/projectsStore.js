@@ -24,6 +24,9 @@
     if (!opts.includeArchived) {
       items = items.filter(function (p) { return !p.archived; });
     }
+    if (!opts.includeDeleted) {
+      items = items.filter(function (p) { return !p.deleted; });
+    }
     return items;
   }
 
@@ -99,15 +102,15 @@
 
   // 完全に削除する（1クリック削除・アーカイブ経由の完全削除どちらからも呼べる）。
   // このプロジェクトに属していたTODOはInboxへ戻す（TODOごと消えてしまわないようにするため）。
+  //
+  // 【重要】配列から取り除くのではなく deleted:true の目印（トゥームストーン）を付けるだけにしている。
+  // 理由はtodosStore.remove()と同じで、他端末との同期マージ時に削除が復活してしまうのを防ぐため。
   function remove(id) {
     var current = getById(id);
     if (!current) return false;
     var affectedTodos = App.Store.todos.getAll({ includeArchived: true }).filter(function (t) { return t.projectId === id; });
     affectedTodos.forEach(function (t) { App.Store.todos.update(t.id, { projectId: null }); });
-    store.setState(function (s) {
-      return { items: s.items.filter(function (p) { return p.id !== id; }) };
-    });
-    persist();
+    update(id, { deleted: true, deletedAt: App.Logic.dateUtils.nowISO() });
     return true;
   }
 

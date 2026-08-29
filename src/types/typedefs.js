@@ -19,6 +19,8 @@
  * @property {number} order - ダッシュボード等でのドラッグ並び替え用（小さいほど先）
  * @property {boolean} archived
  * @property {string|null} archivedAt - ISO datetime
+ * @property {boolean} [deleted] - true ならトゥームストーン（削除済み）。クラウド同期で他端末に削除を伝えるための目印
+ * @property {string|null} [deletedAt] - ISO datetime
  * @property {string} createdAt - ISO datetime
  * @property {string} updatedAt - ISO datetime
  */
@@ -59,6 +61,8 @@
  * @property {number} order - Inbox／プロジェクト内でのドラッグ並び替え用（小さいほど先）
  * @property {boolean} archived
  * @property {string|null} archivedAt
+ * @property {boolean} [deleted] - true ならトゥームストーン（削除済み）。クラウド同期で他端末に削除を伝えるための目印
+ * @property {string|null} [deletedAt] - ISO datetime
  * @property {string|null} completedAt
  * @property {string} createdAt
  * @property {string} updatedAt
@@ -76,6 +80,8 @@
  * @property {string} name
  * @property {string} category
  * @property {ProjectTemplateItem[]} todoTemplates
+ * @property {boolean} [deleted] - true ならトゥームストーン（削除済み）。クラウド同期で他端末に削除を伝えるための目印
+ * @property {string|null} [deletedAt] - ISO datetime
  * @property {string} createdAt
  * @property {string} updatedAt - クラウド同期のマージ判定にも使う
  */
