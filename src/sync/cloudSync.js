@@ -98,7 +98,7 @@
       var unsubSnapshot = docRef.onSnapshot(function (snap) {
         var data = snap.data();
         var remoteItems = (data && data.items) || [];
-        var localItems = store.getAll({ includeArchived: true });
+        var localItems = store.getAll({ includeArchived: true, includeDeleted: true });
         var merged = mergeById(localItems, remoteItems, col.timeField);
 
         if (!sameItems(merged, localItems)) {
