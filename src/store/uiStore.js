@@ -20,7 +20,8 @@
     sidebarOpen: false, // モバイル用
     searchOpen: false,
     dashboardInboxOpen: false,
-    dashboardIncompleteOpen: false
+    dashboardIncompleteOpen: false,
+    pendingTodoProjectAssignId: null // 新規プロジェクト作成モーダルを閉じた後、このTODOへ自動でprojectIdを割り当てる
   });
 
   function setView(view) {
@@ -44,7 +45,13 @@
     store.setState({ projectFormId: id || 'new' });
   }
   function closeProjectForm() {
-    store.setState({ projectFormId: null });
+    // pendingTodoProjectAssignIdもここでまとめて消す。作成成功時はprojectForm.js側で使い終わってから
+    // closeProjectForm()を呼ぶので問題なく、キャンセル時は次に別のプロジェクトを作った時に
+    // 古いTODOへ誤って割り当てられてしまうのを防ぐ。
+    store.setState({ projectFormId: null, pendingTodoProjectAssignId: null });
+  }
+  function setPendingTodoProjectAssignId(id) {
+    store.setState({ pendingTodoProjectAssignId: id });
   }
 
   function openTemplateForm(id) {
@@ -101,6 +108,7 @@
     closeTodoDetail: closeTodoDetail,
     openProjectForm: openProjectForm,
     closeProjectForm: closeProjectForm,
+    setPendingTodoProjectAssignId: setPendingTodoProjectAssignId,
     openTemplateForm: openTemplateForm,
     closeTemplateForm: closeTemplateForm,
     setBulkMode: setBulkMode,

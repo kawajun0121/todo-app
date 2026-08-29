@@ -1,6 +1,10 @@
 /*
  役割: プロジェクト作成／編集モーダル。新規作成時はテンプレート選択でTODOを一括生成できる。
- 依存: render/common.js, store/projectsStore.js, store/templatesStore.js
+ 依存: render/common.js, store/projectsStore.js, store/templatesStore.js, store/todosStore.js, store/uiStore.js
+
+ render/todoRow.js の「プロジェクトへ移動」セレクトで「＋ 新規プロジェクトを作成…」が選ばれた時は、
+ App.Store.ui.pendingTodoProjectAssignId にそのTODOのidが入った状態でこのモーダルが開く。
+ 作成が完了したら、そのTODOへ新しいprojectIdを自動で割り当てる。
 */
 (function (App) {
   'use strict';
@@ -25,6 +29,12 @@
 
     var entityAttr = isNew ? '' : 'data-entity="project" data-entity-id="' + project.id + '"';
 
+    var pendingTodoId = isNew ? App.Store.ui.getState().pendingTodoProjectAssignId : null;
+    var pendingTodo = pendingTodoId ? App.Store.todos.getById(pendingTodoId) : null;
+    var pendingHint = pendingTodo
+      ? '<div class="form-hint">作成すると「' + c.escapeHtml(pendingTodo.title) + '」がこのプロジェクトに追加されます</div>'
+      : '';
+
     return (
       '<div class="modal-overlay" data-action="projectform:close"></div>' +
       '<div class="modal">' +
@@ -33,6 +43,7 @@
           '<button type="button" class="icon-btn" data-action="projectform:close" title="閉じる">×</button>' +
         '</div>' +
         '<div class="modal-body">' +
+          pendingHint +
           '<label>プロジェクト名<input type="text" id="pf-name" value="' + c.escapeHtml(project.name) + '" ' + (isNew ? '' : 'data-field="name" ' + entityAttr) + ' placeholder="例: 民泊2軒目" autofocus /></label>' +
           '<label>カテゴリ<input type="text" id="pf-category" value="' + c.escapeHtml(project.category) + '" list="category-suggestions" ' + (isNew ? '' : 'data-field="category" ' + entityAttr) + ' placeholder="例: 民泊" />' +
             '<datalist id="category-suggestions">' + CATEGORY_SUGGESTIONS.map(function (s) { return '<option value="' + s + '"></option>'; }).join('') + '</datalist>' +
@@ -77,7 +88,13 @@
     if (templateId) {
       App.Store.templates.applyToProject(templateId, project.id);
     }
-    App.Store.ui.closeProjectForm();
+
+    var pendingTodoId = App.Store.ui.getState().pendingTodoProjectAssignId;
+    if (pendingTodoId) {
+      App.Store.todos.update(pendingTodoId, { projectId: project.id });
+    }
+
+    App.Store.ui.closeProjectForm(); // pendingTodoProjectAssignIdもここで一緒にクリアされる
     App.Store.ui.toggleProjectExpanded(project.id);
   };
 })(window.TodoApp = window.TodoApp || {});

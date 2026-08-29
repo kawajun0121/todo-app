@@ -1,6 +1,6 @@
 /*
  役割: TODO1件分の行HTMLを組み立てる（ダッシュボード/スマート一覧/プロジェクト展開パネル/Inboxで共用）。
- 依存: render/common.js, logic/dateUtils.js
+ 依存: render/common.js, logic/dateUtils.js, store/uiStore.js（新規プロジェクト作成の受け渡しに使う）
 
  行の中に「重要度・開始日・期限・ステータス（先行依頼を含む）」の編集コントロールを
  常設し、ドロワーを開かなくてもその場で設定変更できるようにしている。
@@ -16,6 +16,10 @@
 
  重要度はバッジのような別要素ではなく、行そのものの左端の色帯（todo-row-importance-*）と
  タイトル文字の背景色（todo-title-importance-*。マーカーで線を引いたような見た目）で表す。
+
+ 「プロジェクトへ移動」セレクトからは既存プロジェクトへの移動に加えて、
+ 「＋ 新規プロジェクトを作成…」でその場でプロジェクトを新規作成し、作成後に
+ 自動でこのTODOを割り当てることもできる（render/projectForm.js側の処理と対になっている）。
 */
 (function (App) {
   'use strict';
@@ -118,13 +122,16 @@
     );
   }
 
+  // プロジェクトが1件も無くても「＋ 新規プロジェクトを作成」だけは選べるようにするため、
+  // data-fieldでの直接保存ではなく、data-action-changeで一度JS側の判定を挟んでいる。
   function renderMoveToProjectSelect(todo) {
     var projects = App.Store.projects.getAll();
-    if (projects.length === 0) return '';
-    var optionsHtml = '<option value="">プロジェクトへ移動…</option>' + projects.map(function (p) {
-      return '<option value="' + p.id + '">' + c.escapeHtml(p.name) + '</option>';
-    }).join('');
-    return '<select class="todo-move-select" data-field="projectId" data-entity="todo" data-entity-id="' + todo.id + '">' + optionsHtml + '</select>';
+    var optionsHtml = '<option value="">プロジェクトへ移動…</option>' +
+      projects.map(function (p) {
+        return '<option value="' + p.id + '">' + c.escapeHtml(p.name) + '</option>';
+      }).join('') +
+      '<option value="__new__">＋ 新規プロジェクトを作成…</option>';
+    return '<select class="todo-move-select" data-action-change="todo:moveOrCreateProject" data-id="' + todo.id + '">' + optionsHtml + '</select>';
   }
 
   function renderTodoList(todos, options) {
@@ -171,5 +178,19 @@
     var patch = { status: value, isDelegated: false };
     if (current && current.completedAt) patch.completedAt = null; // 完了から他ステータスへ戻す場合
     App.Store.todos.update(dataset.id, patch);
+  };
+
+  // 「プロジェクトへ移動」セレクトの選択処理。「＋ 新規プロジェクトを作成…」が選ばれた場合は、
+  // このTODOのidを覚えておいてから作成モーダルを開く。作成完了時にprojectForm.js側で
+  // このTODOへ自動的に新しいprojectIdを割り当てる（App.Store.ui.pendingTodoProjectAssignId参照）。
+  App.Actions['todo:moveOrCreateProject'] = function (dataset, evt, target) {
+    var value = target.value;
+    if (!value) return;
+    if (value === '__new__') {
+      App.Store.ui.setPendingTodoProjectAssignId(dataset.id);
+      App.Store.ui.openProjectForm(null);
+      return;
+    }
+    App.Store.todos.update(dataset.id, { projectId: value });
   };
 })(window.TodoApp = window.TodoApp || {});
