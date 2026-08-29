@@ -124,8 +124,9 @@
 
   // プロジェクトが1件も無くても「＋ 新規プロジェクトを作成」だけは選べるようにするため、
   // data-fieldでの直接保存ではなく、data-action-changeで一度JS側の判定を挟んでいる。
+  // 完了済みのプロジェクトは移動先の候補から除外する（もう動いていない案件なため）。
   function renderMoveToProjectSelect(todo) {
-    var projects = App.Store.projects.getAll();
+    var projects = App.Store.projects.getAll().filter(function (p) { return p.status !== 'completed'; });
     var optionsHtml = '<option value="">プロジェクトへ移動…</option>' +
       projects.map(function (p) {
         return '<option value="' + p.id + '">' + c.escapeHtml(p.name) + '</option>';
