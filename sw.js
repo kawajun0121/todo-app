@@ -8,7 +8,7 @@
  CACHE_NAMEのバージョン番号は、キャッシュの中身を入れ替えたいとき（ファイルを追加/削除したとき）
  に上げる。中身を変えずにバージョンだけ上げても更新はされない点に注意。
 */
-var CACHE_NAME = 'todo-app-cache-v9';
+var CACHE_NAME = 'todo-app-cache-v10';
 
 var ASSETS = [
   './',
