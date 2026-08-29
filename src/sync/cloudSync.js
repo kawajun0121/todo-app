@@ -18,6 +18,13 @@
    deleted:trueを除外するので、削除済み項目が表示されることはない。
    なお両端末でほぼ同時に同じ項目を編集した場合は、更新日時が新しい方（後から保存した方）で
    上書きされる。個人の1〜2台での利用を想定した簡易な同期のため、この制限は許容している。
+ - 【書き込みの間引き】一括操作（複数選択して一括完了 等）や、完了時の繰り返しTODO自動生成のように、
+   短時間に何度も連続してローカルの変更が起きる場面がある。素直に毎回Firestoreへ書き込むと、
+   両端末を同時に開いているときにその都度もう片方の端末で再描画が走ってしまい動作が重く感じられる。
+   そのため、ローカル変更のFirestore書き込みは少し（UPLOAD_DEBOUNCE_MS）待ってから行い、
+   待っている間にさらに変更があれば1回にまとめて書き込む（scheduleUpload参照）。
+   ローカルのlocalStorage保存自体（各storeのpersist()）は待たずに毎回即時に行われるため、
+   この間引きによってローカルでの動作やデータの保存が遅れることはない。
 */
 (function (App) {
   'use strict';
@@ -31,6 +38,18 @@
   ];
 
   var unsubscribeFns = [];
+  var uploadTimers = {};
+  var UPLOAD_DEBOUNCE_MS = 400; // 短時間に連続する変更を1回のFirestore書き込みにまとめるまでの待ち時間
+
+  // 指定コレクションのFirestore書き込みを少し遅らせて予約する。待っている間に同じコレクションで
+  // 再度呼ばれたら前の予約は取り消して延長する（＝一番最後の状態だけを1回書き込む）。
+  function scheduleUpload(name, docRef, items) {
+    if (uploadTimers[name]) clearTimeout(uploadTimers[name]);
+    uploadTimers[name] = setTimeout(function () {
+      uploadTimers[name] = null;
+      docRef.set({ items: items });
+    }, UPLOAD_DEBOUNCE_MS);
+  }
 
   function storeFor(name) {
     return { todos: App.Store.todos, projects: App.Store.projects, templates: App.Store.templates, history: App.Store.history }[name];
@@ -105,7 +124,7 @@
 
       var unsubLocal = store.subscribe(function (state) {
         if (applyingRemote) return;
-        docRef.set({ items: state.items });
+        scheduleUpload(col.name, docRef, state.items);
       });
 
       unsubscribeFns.push(unsubSnapshot, unsubLocal);
@@ -117,6 +136,10 @@
       try { fn(); } catch (e) { /* 無視 */ }
     });
     unsubscribeFns = [];
+    Object.keys(uploadTimers).forEach(function (name) {
+      if (uploadTimers[name]) clearTimeout(uploadTimers[name]);
+    });
+    uploadTimers = {};
   }
 
   App.Sync.cloudSync = { start: start, stop: stop };
