@@ -11,6 +11,9 @@
  （'inbox' または 'project:<プロジェクトid>'。同じlistKeyの行同士でのみ並び替えできる。
  実際のドラッグ処理は appShell.js が #app への委譲イベントで行う）。
 
+ 行右端のゴミ箱アイコンは確認ダイアログなしの1クリック削除（アーカイブを経由しない）。
+ 元に戻す手段は無いため、誤操作が心配な場合はドロワーの「アーカイブ」を使う。
+
  重要度はバッジのような別要素ではなく、行そのものの左端の色帯（todo-row-importance-*）と
  タイトル文字の背景色（todo-title-importance-*。マーカーで線を引いたような見た目）で表す。
 */
@@ -82,6 +85,7 @@
             '</div>' +
             '<div class="todo-badges">' + badges + subtaskProgress + '</div>' +
           '</div>' +
+          c.iconButton('todo:deleteNow', todo.id, '🗑', '削除') +
         '</div>' +
         renderQuickEdit(todo) +
         moveToProject +
@@ -145,6 +149,11 @@
 
   App.Actions['todo:openDetail'] = function (dataset) {
     App.Store.ui.openTodoDetail(dataset.id);
+  };
+
+  // 行のゴミ箱アイコンからの1クリック削除（確認ダイアログなし。アーカイブを経由しなくても削除できる）
+  App.Actions['todo:deleteNow'] = function (dataset) {
+    App.Store.todos.remove(dataset.id);
   };
 
   // ステータス（先行依頼を含む）の行内クイック編集

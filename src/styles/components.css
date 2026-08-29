@@ -132,6 +132,8 @@
 }
 
 .todo-row-top-line { display: flex; align-items: flex-start; gap: var(--space-3); }
+.todo-row-top-line [data-action="todo:deleteNow"] { flex-shrink: 0; }
+.todo-row-top-line [data-action="todo:deleteNow"]:hover { background: var(--danger-soft); color: var(--danger); }
 
 .todo-check, .bulk-check {
   margin-top: 3px;

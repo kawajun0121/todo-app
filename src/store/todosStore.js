@@ -146,9 +146,11 @@
     return result;
   }
 
+  // 完全に削除する。アーカイブ経由（archiveView）でも、行のゴミ箱アイコンからの
+  // 1クリック削除（todoRow）でも、どちらからでも呼べるようアーカイブ状態は問わない。
   function remove(id) {
     var current = getById(id);
-    if (!current || !current.archived) return false;
+    if (!current) return false;
     store.setState(function (s) {
       return { items: s.items.filter(function (t) { return t.id !== id; }) };
     });
