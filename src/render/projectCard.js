@@ -6,6 +6,10 @@
  他のカードにドロップすると並び順（order）が変わる（appShell.jsが処理）。
  カード自体（.project-card）は data-drop-target="project" も持っており、
  Inbox等のTODOをドロップするとそのプロジェクトへ移動する（既存機能）。
+
+ タイトル行右端のゴミ箱アイコンは確認ダイアログなしの1クリック削除。所属TODOはInboxへ戻る
+ （projectsStore.remove参照）。元に戻す手段は無いため、誤操作が心配な場合はプロジェクト編集の
+ 「アーカイブ」を使う。
 */
 (function (App) {
   'use strict';
@@ -60,6 +64,7 @@
             '<div class="project-card-title-row">' +
               '<span class="project-card-name">' + c.escapeHtml(project.name) + '</span>' +
               c.projectStatusBadge(project.status) +
+              c.iconButton('project:deleteNow', project.id, '🗑', '削除') +
             '</div>' +
             (project.category ? '<div class="project-card-category">' + c.escapeHtml(project.category) + '</div>' : '') +
             '<div class="progress-bar"><div class="progress-bar-fill" style="width:' + stats.progressPct + '%"></div></div>' +
@@ -150,6 +155,9 @@
 
   App.Actions['project:toggleExpand'] = function (d) { App.Store.ui.toggleProjectExpanded(d.id); };
   App.Actions['projectlist:setTab'] = function (d) { App.Store.ui.setProjectListFilter(d.tab); };
+  // カード右上のゴミ箱アイコンからの1クリック削除（確認ダイアログなし）。
+  // 所属していたTODOはInboxへ戻る（projectsStore.remove参照）。
+  App.Actions['project:deleteNow'] = function (d) { App.Store.projects.remove(d.id); };
   App.Actions['quickadd:submitForProject'] = function (d, evt, target) {
     var title = target.value.trim();
     if (!title) return;

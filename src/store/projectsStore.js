@@ -1,7 +1,9 @@
 /*
  役割: プロジェクトのCRUDと変更履歴の記録。
  依存: store/state.js, storage/storageAdapter.js, storage/keys.js,
-      logic/id.js, logic/dateUtils.js, store/historyStore.js
+      logic/id.js, logic/dateUtils.js, store/historyStore.js, store/todosStore.js
+      （todosStoreへの参照はremove()内のみで、実行時（ユーザー操作時）に呼ばれるため
+      <script>の読み込み順はどちらが先でも問題ない）
 */
 (function (App) {
   'use strict';
@@ -95,10 +97,13 @@
     return result;
   }
 
-  // アーカイブ済みのものだけ完全削除できる（誤操作防止）
+  // 完全に削除する（1クリック削除・アーカイブ経由の完全削除どちらからも呼べる）。
+  // このプロジェクトに属していたTODOはInboxへ戻す（TODOごと消えてしまわないようにするため）。
   function remove(id) {
     var current = getById(id);
-    if (!current || !current.archived) return false;
+    if (!current) return false;
+    var affectedTodos = App.Store.todos.getAll({ includeArchived: true }).filter(function (t) { return t.projectId === id; });
+    affectedTodos.forEach(function (t) { App.Store.todos.update(t.id, { projectId: null }); });
     store.setState(function (s) {
       return { items: s.items.filter(function (p) { return p.id !== id; }) };
     });
