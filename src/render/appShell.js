@@ -15,6 +15,10 @@
   'use strict';
   App.Render = App.Render || {};
 
+  // 端末が最新版を読み込めているか画面から目視確認できるようにするための表示用バージョン番号。
+  // sw.jsのCACHE_NAMEを上げるときはこちらの数字も一緒に上げること。
+  var APP_VERSION = 'v11';
+
   var SMART_NAV_ORDER = ['today', 'overdue', 'thisWeek', 'important', 'delegated', 'waiting', 'followUp', 'recurring', 'completed'];
 
   function navBadge(count, danger) {
@@ -72,6 +76,7 @@
       '<div class="sidebar-group sidebar-account">' +
         '<div class="sidebar-account-email" title="' + App.Render.common.escapeHtml(email) + '">🔗 ' + App.Render.common.escapeHtml(email) + '</div>' +
         '<button type="button" class="btn-text" data-action="account:signOut">ログアウト</button>' +
+        '<div class="sidebar-app-version">' + APP_VERSION + '</div>' +
       '</div>'
     );
   }
