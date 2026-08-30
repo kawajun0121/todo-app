@@ -20,7 +20,7 @@
     sidebarOpen: false, // モバイル用
     searchOpen: false,
     dashboardInboxOpen: false,
-    dashboardIncompleteOpen: false,
+    dashboardIncompleteOpen: true, // 未完了のTODOは常に全件表示がデフォルト（トグルボタンで非表示にはできる）
     pendingTodoProjectAssignId: null // 新規プロジェクト作成モーダルを閉じた後、このTODOへ自動でprojectIdを割り当てる
   });
 
