@@ -19,8 +19,9 @@
     var next7Days = App.Logic.smartLists.getNext7Days(allTodos);
     var delegated = lists.delegated.filter(allTodos);
     var inboxTodos = lists.inbox.filter(allTodos).sort(function (a, b) { return (a.order || 0) - (b.order || 0); });
-    // ドラッグで並び替えられるよう、Inbox/プロジェクト内と同じくorderで並べる（期限順ではない）
-    var incompleteTodos = allTodos.filter(function (t) { return t.status !== 'completed'; })
+    // ドラッグで並び替えられるよう、Inbox/プロジェクト内と同じくorderで並べる（期限順ではない）。
+    // 先行依頼中のものは「先行依頼」欄に一本化し、ここには出さない（isDelegatedを外せば戻ってくる）。
+    var incompleteTodos = allTodos.filter(function (t) { return t.status !== 'completed' && !t.isDelegated; })
       .sort(function (a, b) { return (a.order || 0) - (b.order || 0); });
 
     return (

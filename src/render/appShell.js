@@ -17,7 +17,7 @@
 
   // 端末が最新版を読み込めているか画面から目視確認できるようにするための表示用バージョン番号。
   // sw.jsのCACHE_NAMEを上げるときはこちらの数字も一緒に上げること。
-  var APP_VERSION = 'v14';
+  var APP_VERSION = 'v15';
 
   var SMART_NAV_ORDER = ['today', 'overdue', 'thisWeek', 'important', 'delegated', 'waiting', 'followUp', 'recurring', 'completed'];
 
