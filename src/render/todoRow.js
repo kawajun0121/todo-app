@@ -97,18 +97,26 @@
     );
   }
 
+  // 重要度はドロップダウンを開かなくても押した瞬間に切り替わるよう、選択肢を並べたボタン群にしている
+  // （高/低をワンクリックで設定したいという要望に対応。選択中のものは色付きで示す）。
+  function renderImportanceButtons(todo) {
+    var buttons = Object.keys(c.IMPORTANCE_LABEL).map(function (key) {
+      var active = key === todo.importance;
+      return '<button type="button" class="qe-importance-btn qe-importance-' + key + (active ? ' qe-importance-active' : '') + '" ' +
+        'data-action="todo:setImportance" data-id="' + todo.id + '" data-importance="' + key + '">' + c.IMPORTANCE_LABEL[key] + '</button>';
+    }).join('');
+    return '<span class="qe-importance-group" title="重要度">' + buttons + '</span>';
+  }
+
   function renderQuickEdit(todo) {
     var statusValue = todo.isDelegated ? 'delegated' : todo.status;
     var statusOptions = Object.keys(STATUS_OR_DELEGATE_LABEL).map(function (key) {
       return '<option value="' + key + '" ' + (key === statusValue ? 'selected' : '') + '>' + STATUS_OR_DELEGATE_LABEL[key] + '</option>';
     }).join('');
-    var importanceOptions = Object.keys(c.IMPORTANCE_LABEL).map(function (key) {
-      return '<option value="' + key + '" ' + (key === todo.importance ? 'selected' : '') + '>重要度:' + c.IMPORTANCE_LABEL[key] + '</option>';
-    }).join('');
 
     return (
       '<div class="todo-quick-edit">' +
-        '<select class="qe-field" data-field="importance" data-entity="todo" data-entity-id="' + todo.id + '" title="重要度">' + importanceOptions + '</select>' +
+        renderImportanceButtons(todo) +
         '<span class="qe-date-group" title="開始日">' +
           '<span class="qe-label">開始</span>' +
           '<input type="date" class="qe-field" data-field="startDate" data-entity="todo" data-entity-id="' + todo.id + '" value="' + (todo.startDate || '') + '" />' +
@@ -162,6 +170,11 @@
   // 行のゴミ箱アイコンからの1クリック削除（確認ダイアログなし。アーカイブを経由しなくても削除できる）
   App.Actions['todo:deleteNow'] = function (dataset) {
     App.Store.todos.remove(dataset.id);
+  };
+
+  // 重要度ボタンの1クリック設定
+  App.Actions['todo:setImportance'] = function (dataset) {
+    App.Store.todos.update(dataset.id, { importance: dataset.importance });
   };
 
   // ステータス（先行依頼を含む）の行内クイック編集

@@ -181,6 +181,25 @@
   gap: 3px;
   flex-shrink: 0;
 }
+.qe-importance-group {
+  display: inline-flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+.qe-importance-btn {
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+  color: var(--text-faint);
+  font-size: 11px;
+  padding: 3px 7px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  line-height: 1.2;
+}
+.qe-importance-btn:hover { color: var(--text-muted); }
+.qe-importance-btn.qe-importance-active.qe-importance-high { background: var(--importance-high-soft); color: var(--importance-high-text); border-color: transparent; font-weight: 700; }
+.qe-importance-btn.qe-importance-active.qe-importance-medium { background: var(--importance-medium-soft); color: var(--importance-medium-text); border-color: transparent; font-weight: 700; }
+.qe-importance-btn.qe-importance-active.qe-importance-low { background: var(--importance-low-soft); color: var(--importance-low-text); border-color: transparent; font-weight: 700; }
 .qe-label {
   font-size: 10px;
   color: var(--text-faint);
