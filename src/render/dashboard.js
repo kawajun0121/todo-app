@@ -1,6 +1,7 @@
 /*
- 役割: トップ画面（今日／7日以内／先行依頼／Inbox／未完了のTODOを1画面で表示）。
- 期限切れ・フォローアップ必要・待機中・重要は要確認欄としては出さず、サイドバーのスマート一覧から確認する。
+ 役割: トップ画面（重要度が高いTODO／今日／7日以内／先行依頼／Inbox／未完了のTODOを1画面で表示）。
+ 期限切れ・フォローアップ必要・待機中は要確認欄としては出さず、サイドバーのスマート一覧から確認する
+ （「重要」だけは要望により最上部にセクションとして常設している）。
  プロジェクトはダッシュボードには表示しない。プロジェクト自体の確認は「プロジェクト一覧」画面
  （render/projectCard.js）で行う。
  依存: render/common.js, render/todoRow.js, logic/smartLists.js
@@ -13,6 +14,7 @@
   function render(state) {
     var allTodos = App.Store.todos.getAll();
     var lists = App.Logic.smartLists.BY_KEY;
+    var important = lists.important.filter(allTodos);
     var today = lists.today.filter(allTodos);
     var next7Days = App.Logic.smartLists.getNext7Days(allTodos);
     var delegated = lists.delegated.filter(allTodos);
@@ -23,6 +25,10 @@
 
     return (
       '<div class="view dashboard">' +
+        '<section class="dashboard-section">' +
+          '<h2>❗ 重要度が高いTODO</h2>' +
+          App.Render.todoRow.renderList(important, { showProject: true, emptyText: '重要度が高いTODOはありません' }) +
+        '</section>' +
         '<section class="dashboard-section">' +
           '<h2>☀️ 今日</h2>' +
           App.Render.todoRow.renderList(today, { showProject: true, emptyText: '今日期限のTODOはありません' }) +
