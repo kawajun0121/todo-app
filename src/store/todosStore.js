@@ -163,6 +163,19 @@
     return true;
   }
 
+  // 「先行依頼」(isDelegated)と「待機中」(status==='waiting')は同じ用途で使われていたため、
+  // statusの'waiting'に一本化した。過去にisDelegated:trueで保存されていたTODOをここで
+  // status:'waiting'へ寄せる（起動時に毎回呼ばれるが、移行済みのものはstatusが既にwaitingなので
+  // 対象に残らず何もしない＝安全に繰り返し呼べる）。isDelegatedの値自体はそのまま残すが、
+  // 画面上はもうどこからも参照しない。
+  function migrateLegacyDelegated() {
+    getAll({ includeArchived: true }).forEach(function (t) {
+      if (t.isDelegated && t.status !== 'waiting') {
+        update(t.id, { status: 'waiting' });
+      }
+    });
+  }
+
   function bulkUpdate(ids, patch) {
     ids.forEach(function (id) { update(id, patch); });
   }
@@ -230,6 +243,7 @@
     archive: archive,
     restore: restore,
     remove: remove,
+    migrateLegacyDelegated: migrateLegacyDelegated,
     bulkUpdate: bulkUpdate,
     bulkArchive: bulkArchive,
     replaceAll: replaceAll,

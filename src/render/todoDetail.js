@@ -50,8 +50,10 @@
     }).join('') + '</ul>';
   }
 
+  // 「先行依頼」と「待機中」は同じ使われ方だったため統合済み（依頼先・依頼日・待機期限は
+  // 待機中ステータスの時だけ表示する。store/todosStore.jsのmigrateLegacyDelegated参照）。
   function renderDelegateFields(todo) {
-    if (!todo.isDelegated) return '';
+    if (todo.status !== 'waiting') return '';
     return (
       '<div class="field-grid">' +
         '<label>依頼先<input type="text" value="' + c.escapeHtml(todo.delegateTo) + '" data-field="delegateTo" data-entity="todo" data-entity-id="' + todo.id + '" placeholder="例: ○○工務店" /></label>' +
@@ -87,7 +89,6 @@
             '<label>期限<input type="date" value="' + (todo.dueDate || '') + '" data-field="dueDate" data-entity="todo" data-entity-id="' + todo.id + '" /></label>' +
             '<label>リマインダー<input type="datetime-local" value="' + (todo.reminderAt || '') + '" data-field="reminderAt" data-entity="todo" data-entity-id="' + todo.id + '" /></label>' +
           '</div>' +
-          '<label class="checkbox-line"><input type="checkbox" ' + (todo.isDelegated ? 'checked' : '') + ' data-field="isDelegated" data-entity="todo" data-entity-id="' + todo.id + '" /> 先行依頼（他者へ依頼して回答待ち）</label>' +
           renderDelegateFields(todo) +
           '<div class="field-grid recurrence-row" data-todo-id="' + todo.id + '">' +
             '<label>繰り返し<select data-action-change="recurrence:setFreq" data-id="' + todo.id + '">' + selectOptions(FREQ_LABEL, freqValue) + '</select></label>' +

@@ -49,14 +49,6 @@
       }
     },
     {
-      key: 'delegated',
-      label: '先行依頼',
-      icon: '📨',
-      filter: function (todos) {
-        return todos.filter(function (t) { return notCompleted(t) && t.isDelegated; });
-      }
-    },
-    {
       key: 'waiting',
       label: '待機中',
       icon: '⏳',

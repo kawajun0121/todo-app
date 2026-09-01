@@ -44,6 +44,7 @@
       App.Store.history.subscribe(scheduleRender);
       App.Store.ui.subscribe(scheduleRender);
     }
+    App.Store.todos.migrateLegacyDelegated(); // 「先行依頼」→「待機中」への一本化（詳細はtodosStore.js参照）
     App.Render.appShell.renderAll(); // 最初の1回は即座に描画する
   }
 

@@ -2,7 +2,7 @@
  役割: TODO1件分の行HTMLを組み立てる（ダッシュボード/スマート一覧/プロジェクト展開パネル/Inboxで共用）。
  依存: render/common.js, logic/dateUtils.js, store/uiStore.js（新規プロジェクト作成の受け渡しに使う）
 
- 行の中に「重要度・開始日・期限・ステータス（先行依頼を含む）」の編集コントロールを
+ 行の中に「重要度・開始日・期限・ステータス」の編集コントロールを
  常設し、ドロワーを開かなくてもその場で設定変更できるようにしている。
  これらのコントロールは todo-row-main（クリックでドロワーを開く領域）の外側に置くことで、
  セレクトや日付入力を操作したときに誤ってドロワーが開かないようにしている。
@@ -25,16 +25,6 @@
   'use strict';
   App.Render = App.Render || {};
   var c = App.Render.common;
-
-  // ステータスと先行依頼は本来別々のデータだが、行内の簡易編集では
-  // 1つのセレクトにまとめて扱う（依頼中は他のステータスより優先して表示する）。
-  var STATUS_OR_DELEGATE_LABEL = {
-    not_started: '未着手',
-    delegated: '先行依頼',
-    waiting: '待機中',
-    in_progress: '進行中',
-    completed: '完了'
-  };
 
   // options: { bulkMode, isSelected(id)->bool, showProject, emptyText, listKey }
   function renderTodoRow(todo, options) {
@@ -109,9 +99,8 @@
   }
 
   function renderQuickEdit(todo) {
-    var statusValue = todo.isDelegated ? 'delegated' : todo.status;
-    var statusOptions = Object.keys(STATUS_OR_DELEGATE_LABEL).map(function (key) {
-      return '<option value="' + key + '" ' + (key === statusValue ? 'selected' : '') + '>' + STATUS_OR_DELEGATE_LABEL[key] + '</option>';
+    var statusOptions = Object.keys(c.STATUS_LABEL).map(function (key) {
+      return '<option value="' + key + '" ' + (key === todo.status ? 'selected' : '') + '>' + c.STATUS_LABEL[key] + '</option>';
     }).join('');
 
     return (
@@ -125,7 +114,7 @@
           '<span class="qe-label">期限</span>' +
           '<input type="date" class="qe-field" data-field="dueDate" data-entity="todo" data-entity-id="' + todo.id + '" value="' + (todo.dueDate || '') + '" />' +
         '</span>' +
-        '<select class="qe-field" data-action-change="todo:setStatusOrDelegate" data-id="' + todo.id + '" title="ステータス">' + statusOptions + '</select>' +
+        '<select class="qe-field" data-action-change="todo:setStatus" data-id="' + todo.id + '" title="ステータス">' + statusOptions + '</select>' +
       '</div>'
     );
   }
@@ -177,19 +166,15 @@
     App.Store.todos.update(dataset.id, { importance: dataset.importance });
   };
 
-  // ステータス（先行依頼を含む）の行内クイック編集
-  App.Actions['todo:setStatusOrDelegate'] = function (dataset, evt, target) {
+  // ステータスの行内クイック編集（「待機中」を選べば、待機期限や依頼先はドロワーで設定する）
+  App.Actions['todo:setStatus'] = function (dataset, evt, target) {
     var value = target.value;
-    if (value === 'delegated') {
-      App.Store.todos.update(dataset.id, { isDelegated: true });
-      return;
-    }
     if (value === 'completed') {
       App.Store.todos.complete(dataset.id);
       return;
     }
     var current = App.Store.todos.getById(dataset.id);
-    var patch = { status: value, isDelegated: false };
+    var patch = { status: value };
     if (current && current.completedAt) patch.completedAt = null; // 完了から他ステータスへ戻す場合
     App.Store.todos.update(dataset.id, patch);
   };

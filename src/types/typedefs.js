@@ -50,9 +50,11 @@
  * @property {string|null} dueDate - 'YYYY-MM-DD'
  * @property {'not_started'|'in_progress'|'waiting'|'completed'} status
  * @property {string} memo
- * @property {boolean} isDelegated - 先行依頼（重要度とは独立した属性）
- * @property {string} delegateTo
- * @property {string|null} delegatedAt - 'YYYY-MM-DD'
+ * @property {boolean} isDelegated - 【旧項目】「待機中」(status:'waiting')に統合済み。
+ *   過去データの移行用にフィールドは残っているが、画面上はもうどこからも参照しない
+ *   （store/todosStore.jsのmigrateLegacyDelegated参照）。
+ * @property {string} delegateTo - 依頼先。statusが'waiting'の時だけドロワーに表示・編集する
+ * @property {string|null} delegatedAt - 'YYYY-MM-DD'。依頼先に依頼した日
  * @property {string|null} waitingDeadline - 'YYYY-MM-DD'（回答希望日）
  * @property {string|null} reminderAt - ISO datetime（将来のブラウザ通知用）
  * @property {RecurrenceRule|null} recurrence
