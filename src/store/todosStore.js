@@ -168,9 +168,24 @@
   // status:'waiting'へ寄せる（起動時に毎回呼ばれるが、移行済みのものはstatusが既にwaitingなので
   // 対象に残らず何もしない＝安全に繰り返し呼べる）。isDelegatedの値自体はそのまま残すが、
   // 画面上はもうどこからも参照しない。
+  //
+  // 【重要】既にcompletedのTODOは対象から除外する。先行依頼→完了、という順で操作した場合、
+  // complete()はisDelegatedを消さないため完了後もisDelegated:trueが残ったままになる。
+  // これを除外しないと、完了済みのTODOまで毎回status:'waiting'に書き換えてしまい、
+  // 「完了したはずのTODOが未完了に戻る」不具合になる（実際に発生した）。
+  //
+  // 【復旧】上記の不具合が直る前に一度でも実行されてしまった環境では、既に
+  // completedAtが残ったままstatusだけwaitingに書き換えられたTODOが存在しうる。
+  // completedAtが入っているのにstatusがcompletedでない状態は、この不具合の痕跡以外に
+  // 起こりえない（complete()/reopen()は必ずstatusとcompletedAtをセットで扱う）ため、
+  // 見つけ次第completedへ復元する。
   function migrateLegacyDelegated() {
     getAll({ includeArchived: true }).forEach(function (t) {
-      if (t.isDelegated && t.status !== 'waiting') {
+      if (t.completedAt && t.status !== 'completed') {
+        update(t.id, { status: 'completed' });
+        return;
+      }
+      if (t.isDelegated && t.status !== 'waiting' && t.status !== 'completed') {
         update(t.id, { status: 'waiting' });
       }
     });
